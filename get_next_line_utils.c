@@ -6,7 +6,7 @@
 /*   By: nzharkev <nzharkev@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 08:55:39 by nzharkev          #+#    #+#             */
-/*   Updated: 2024/06/07 10:57:08 by nzharkev         ###   ########.fr       */
+/*   Updated: 2024/06/07 14:20:22 by nzharkev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,13 @@ void	appender(t_gnl_list **list, char *buffer, int c)
 		list_emptier(list, NULL);
 		return ;
 	}
-	new_n->next = NULL;
 	new_n->l_buffer = malloc(sizeof(char) * (c + 1));
 	if (!new_n->l_buffer)
 	{
 		list_emptier(list, &new_n);
 		return ;
 	}
+	new_n->next = NULL;
 	i = -1;
 	while (buffer[++i] && i < c)
 		new_n->l_buffer[i] = buffer[i];
@@ -124,18 +124,21 @@ void	list_emptier(t_gnl_list **list, t_gnl_list **node)
 	t_gnl_list	*temp;
 	t_gnl_list	*next;
 
-	temp = *list;
 	if (node)
 	{
 		free(*node);
 		*node = NULL;
 	}
-	while (temp)
+	if (list)
 	{
-		free(temp->l_buffer);
-		next = temp->next;
-		free(temp);
-		temp = next;
+		temp = *list;
+		while (temp)
+		{
+			free(temp->l_buffer);
+			next = temp->next;
+			free(temp);
+			temp = next;
+		}
+		*list = NULL;
 	}
-	*list = NULL;
 }

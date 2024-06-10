@@ -6,7 +6,7 @@
 /*   By: nzharkev <nzharkev@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 08:54:42 by nzharkev          #+#    #+#             */
-/*   Updated: 2024/06/07 13:56:13 by nzharkev         ###   ########.fr       */
+/*   Updated: 2024/06/10 12:09:10 by nzharkev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,14 +84,20 @@ int	line_till_nl(t_gnl_list *list)
 	return (len);
 }
 
-int	ft_strlen(char *str)
+void	read_old(t_gnl_list *clean_n, t_gnl_list *last_n)
 {
 	int	i;
+	int	j;
 
 	i = 0;
-	while (str[i])
+	j = 0;
+	while (last_n->l_buffer[i] && last_n->l_buffer[i] != '\n')
 		i++;
-	return (i);
+	if (last_n->l_buffer && last_n->l_buffer[i] == '\n')
+		i++;
+	while (last_n->l_buffer[i])
+		clean_n->l_buffer[j++] = last_n->l_buffer[i++];
+	clean_n->l_buffer[j] = '\0';
 }
 
 char	*get_next_line(int fd)

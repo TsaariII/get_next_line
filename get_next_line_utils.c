@@ -6,7 +6,7 @@
 /*   By: nzharkev <nzharkev@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 08:55:39 by nzharkev          #+#    #+#             */
-/*   Updated: 2024/06/07 14:20:22 by nzharkev         ###   ########.fr       */
+/*   Updated: 2024/06/10 12:48:10 by nzharkev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	create_list(t_gnl_list **list, int fd)
 	}
 }
 
-void	appender(t_gnl_list **list, char *buffer, int c)
+t_gnl_list	*appender(t_gnl_list **list, char *buffer, int c)
 {
 	int			i;
 	t_gnl_list	*new_n;
@@ -49,15 +49,12 @@ void	appender(t_gnl_list **list, char *buffer, int c)
 
 	new_n = malloc(sizeof(t_gnl_list));
 	if (!new_n)
-	{
-		list_emptier(list, NULL);
-		return ;
-	}
+		return (*list);
 	new_n->l_buffer = malloc(sizeof(char) * (c + 1));
 	if (!new_n->l_buffer)
 	{
 		list_emptier(list, &new_n);
-		return ;
+		return (*list);
 	}
 	new_n->next = NULL;
 	i = -1;
@@ -65,12 +62,10 @@ void	appender(t_gnl_list **list, char *buffer, int c)
 		new_n->l_buffer[i] = buffer[i];
 	new_n->l_buffer[i] = '\0';
 	if (!(*list))
-	{
-		*list = new_n;
-		return ;
-	}
+		return (*list = new_n);
 	last_n = ft_lstlast(*list);
 	last_n->next = new_n;
+	return (*list);
 }
 
 t_gnl_list	*ft_lstlast(t_gnl_list *list)
@@ -85,12 +80,9 @@ t_gnl_list	*ft_lstlast(t_gnl_list *list)
 
 void	reset_list(t_gnl_list **list)
 {
-	int			i;
-	int			j;
 	t_gnl_list	*clean_n;
 	t_gnl_list	*last_n;
 
-	i = 0;
 	clean_n = malloc(sizeof(t_gnl_list));
 	if (!clean_n)
 	{
@@ -99,22 +91,14 @@ void	reset_list(t_gnl_list **list)
 	}
 	clean_n->next = NULL;
 	last_n = ft_lstlast(*list);
-	clean_n->l_buffer = malloc(sizeof(char) * \
-		((ft_strlen(last_n->l_buffer) - i) + 1));
+	clean_n->l_buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!last_n || !clean_n->l_buffer)
 	{
 		if (!clean_n->l_buffer)
 			list_emptier(list, &clean_n);
 		return ;
 	}
-	j = 0;
-	while (last_n->l_buffer[i] && last_n->l_buffer[i] != '\n')
-		i++;
-	if (last_n->l_buffer && last_n->l_buffer[i] == '\n')
-		i++;
-	while (last_n->l_buffer[i])
-		clean_n->l_buffer[j++] = last_n->l_buffer[i++];
-	clean_n->l_buffer[j] = '\0';
+	read_old(clean_n, last_n);
 	list_emptier(list, NULL);
 	*list = clean_n;
 }
